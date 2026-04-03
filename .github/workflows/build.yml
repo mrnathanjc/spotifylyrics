@@ -20,18 +20,19 @@ jobs:
           THEOS: ${{ github.workspace }}/theos
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install iOS SDK manually
+      - name: Install iOS SDK
         run: |
           export THEOS=${{ github.workspace }}/theos
           mkdir -p $THEOS/sdks
-          curl -L \
-            --header "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            --header "Accept: application/octet-stream" \
-            "https://github.com/theos/sdks/releases/download/SDK%20Release%201/iPhoneOS16.5.sdk.tar.xz" \
-            -o /tmp/sdk.tar.xz
+          gh release download "SDK Release 1" \
+            --repo theos/sdks \
+            --pattern "iPhoneOS16.5.sdk.tar.xz" \
+            --output /tmp/sdk.tar.xz
           echo "Downloaded $(du -h /tmp/sdk.tar.xz | cut -f1)"
           tar -xJf /tmp/sdk.tar.xz -C $THEOS/sdks
           ls $THEOS/sdks
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build .deb (rootless)
         run: |
