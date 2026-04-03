@@ -57,8 +57,21 @@ static void hideLyricsInHierarchy(UIView *root) {
 }
 
 static void sweepAllWindows(void) {
-    for (UIWindow *window in [UIApplication sharedApplication].windows) {
-        hideLyricsInHierarchy(window);
+    if (@available(iOS 15.0, *)) {
+        for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if ([scene isKindOfClass:[UIWindowScene class]]) {
+                for (UIWindow *window in [(UIWindowScene *)scene windows]) {
+                    hideLyricsInHierarchy(window);
+                }
+            }
+        }
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        for (UIWindow *window in [UIApplication sharedApplication].windows) {
+            hideLyricsInHierarchy(window);
+        }
+#pragma clang diagnostic pop
     }
 }
 
