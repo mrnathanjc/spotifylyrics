@@ -1,0 +1,9 @@
+Package: com.nathannw.nospotifylyrics
+Name: NoSpotifyLyrics
+Version: 1.0
+Architecture: iphoneos-arm64
+Description: Disables the autoplay lyrics preview on Spotify's Now Playing view.
+Maintainer: Nathan
+Author: Nathan
+Section: Tweaks
+Depends: mobilesubstrate

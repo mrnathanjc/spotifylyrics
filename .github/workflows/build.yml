@@ -1,0 +1,36 @@
+name: Build NoSpotifyLyrics .deb
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Theos
+        run: |
+          # Install Theos and iOS SDK
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Build .deb (rootless)
+        run: |
+          export THEOS=${{ github.workspace }}/theos
+          export PATH=$THEOS/bin:$PATH
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NoSpotifyLyrics-deb
+          path: packages/*.deb
+          if-no-files-found: error
