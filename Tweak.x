@@ -5,7 +5,8 @@ static void (*orig_viewDidLayoutSubviews)(id self, SEL _cmd);
 
 static void hooked_viewDidLayoutSubviews(id self, SEL _cmd) {
     orig_viewDidLayoutSubviews(self, _cmd);
-    [(UIViewController *)self].view.hidden = YES;
+    UIView *view = [(UIViewController *)self view];
+    view.hidden = YES;
 }
 
 %ctor {
