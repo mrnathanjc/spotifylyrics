@@ -18,14 +18,13 @@ static NSInteger hooked_numberOfItemsInSection(id self, SEL _cmd, id cv, NSInteg
 }
 
 // Hook 3: Hide audio/video switch button only
-static void (*orig_setHidden)(id self, SEL _cmd, BOOL hidden);
+static void (*orig_layoutSubviews)(id self, SEL _cmd);
 
-static void hooked_setHidden(id self, SEL _cmd, BOOL hidden) {
+static void hooked_layoutSubviews(id self, SEL _cmd) {
+    orig_layoutSubviews(self, _cmd);
     UIView *view = (UIView *)self;
     if ([view.accessibilityIdentifier isEqualToString:@"nowplaying-npv-musicvideos-switch"]) {
-        orig_setHidden(self, _cmd, YES);
-    } else {
-        orig_setHidden(self, _cmd, hidden);
+        view.hidden = YES;
     }
 }
 
@@ -47,10 +46,10 @@ static void hooked_setHidden(id self, SEL _cmd, BOOL hidden) {
     }
 
     // Audio/video switch button
-    Class buttonClass = objc_getClass("NSKVONotifying__TtCCO22NowPlaying_ElementsKit10NowPlaying6Button7Primary");
+    Class buttonClass = objc_getClass("_TtCO22NowPlaying_ElementsKit10NowPlaying6Button");
     if (buttonClass) {
-        Method m = class_getInstanceMethod(buttonClass, @selector(setHidden:));
-        orig_setHidden = (void *)method_getImplementation(m);
-        method_setImplementation(m, (IMP)hooked_setHidden);
+        Method m = class_getInstanceMethod(buttonClass, @selector(layoutSubviews));
+        orig_layoutSubviews = (void *)method_getImplementation(m);
+        method_setImplementation(m, (IMP)hooked_layoutSubviews);
     }
 }
